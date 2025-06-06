@@ -17,7 +17,14 @@ public class GasGun : ModuleRules
 			"AIModule",
 			"StateTreeModule",
 			"GameplayStateTreeModule",
-			"UMG"
+			"UMG",
+			"GameplayAbilities", 
+			"GameplayTasks", 
+			"GameplayTags",
+			"NavigationSystem",
+			"Niagara",
+			"NetCommon",
+			"Networking",
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
