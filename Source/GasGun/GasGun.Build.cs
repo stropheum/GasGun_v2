@@ -31,6 +31,11 @@ public class GasGun : ModuleRules
 
 		PublicIncludePaths.AddRange(new string[] {
 			"GasGun",
+			"GasGun/AbilitySystem",
+			"GasGun/AbilitySystem/Abilities",
+			"GasGun/AbilitySystem/EffectCalculations",
+			"GasGun/AbilitySystem/Effects",
+			//"GasGun/AbilitySystem/",
 			"GasGun/Variant_Horror",
 			"GasGun/Variant_Shooter",
 			"GasGun/Variant_Shooter/AI"
