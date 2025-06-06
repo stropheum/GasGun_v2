@@ -9,12 +9,12 @@
 #include "Components/SphereComponent.h"
 #include "GasGun/AbilitySystem/AttributeSets/ProjectileAttributeSet.h"
 #include "GasGun/AbilitySystem/Data/NativeGameplayTags.h"
-// #include "GasGun/Characters/CharacterBase.h"
+#include "GasGun/Characters/CharacterBase.h"
 #include "Net/UnrealNetwork.h"
 
 AProjectile::AProjectile() 
 {
-	// AttributeSet = CreateDefaultSubobject<UProjectileAttributeSet>("AttributeSet");
+	AttributeSet = CreateDefaultSubobject<UProjectileAttributeSet>("AttributeSet");
 
 	bReplicates = true;
 	
@@ -48,15 +48,15 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 			OnActorHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
 			if (bAttachOnHit)
 			{
-				// if (const ACharacterBase* OtherCharacter = Cast<ACharacterBase>(OtherActor); OtherCharacter)
-				// {                                                                                           
-				// 	USkeletalMeshComponent* OtherCharacterMesh = OtherCharacter->GetMesh();                 
-				// 	AttachToComponent(OtherCharacterMesh, FAttachmentTransformRules::KeepWorldTransform);   
-				// }                                                                                           
-				// else                                                                                        
-				// {                                                                                           
-				// 	AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);	            
-				// }                                                                                           
+				if (const ACharacterBase* OtherCharacter = Cast<ACharacterBase>(OtherActor); OtherCharacter)
+				{                                                                                           
+					USkeletalMeshComponent* OtherCharacterMesh = OtherCharacter->GetMesh();                 
+					AttachToComponent(OtherCharacterMesh, FAttachmentTransformRules::KeepWorldTransform);   
+				}                                                                                           
+				else                                                                                        
+				{                                                                                           
+					AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);	            
+				}                                                                                           
 			}
 		}
 		else if (OtherComp->Mobility == EComponentMobility::Movable && OtherComp->IsSimulatingPhysics())
@@ -77,18 +77,18 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	}
 }
 
-// UGunComponent* AProjectile::GetOwningGun() const
-// {
-// 	return OwningGun;
-// }
+UGunComponent* AProjectile::GetOwningGun() const
+{
+	return OwningGun;
+}
 
-// void AProjectile::OnSetOwningGunCalled_Implementation(UGunComponent* Gun) {}
-//
-// void AProjectile::SetOwningGun(UGunComponent* Gun)
-// {
-// 	OwningGun = Gun;
-// 	OnSetOwningGunCalled(Gun);
-// }
+void AProjectile::OnSetOwningGunCalled_Implementation(UGunComponent* Gun) {}
+
+void AProjectile::SetOwningGun(UGunComponent* Gun)
+{
+	OwningGun = Gun;
+	OnSetOwningGunCalled(Gun);
+}
 
 void AProjectile::RegisterOwnerTagListener(UAbilitySystemComponent* Asc, FGameplayTag TagToRegister)
 {
@@ -113,42 +113,42 @@ void AProjectile::OnTagChanged(const FGameplayTag Tag, const int32 NewCount)
 
 void AProjectile::OnActorHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	// if (const ACharacterBase* Character = Cast<ACharacterBase>(OtherActor))
-	// {
-	// 	if (UAbilitySystemComponent* HitCharacterAcs = Character->GetAbilitySystemComponent();
-	// 		ensureMsgf(HitCharacterAcs, TEXT("No AbilitySystemComponent set for %s"), *GetName()))
-	// 	{
-	// 		FGameplayEffectContextHandle EffectContext = HitCharacterAcs->MakeEffectContext();
-	// 		EffectContext.AddSourceObject(this);
-	// 		EffectContext.AddHitResult(Hit);
-	//
-	// 		if (!DamageEffectClass)
-	// 		{
-	// 			return;
-	// 		}
-	// 		
-	// 		if (const FGameplayEffectSpecHandle SpecHandle = HitCharacterAcs->MakeOutgoingSpec(DamageEffectClass, 1, EffectContext);
-	// 			ensureMsgf(SpecHandle.IsValid(), TEXT("SpecHandle == nullptr for %s"), *GetName()))
-	// 		{
-	// 			if (AttributeSet)
-	// 			{
-	// 				const float DamageValue = AttributeSet->GetDamage();
-	// 				const FGameplayTag ProjectileDamageTag = NativeGameplayTags::Projectile::TAG_DamageType_DirectDamage.GetTag();
-	// 				SpecHandle.Data->SetSetByCallerMagnitude(ProjectileDamageTag, DamageValue);
-	// 			
-	// 				HitCharacterAcs->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);	
-	// 			}
-	// 		}
-	//
-	// 		if (OtherComp->IsSimulatingPhysics())
-	// 		{
-	// 			OtherComp->AddImpulseAtLocation(GetVelocity() * Mass, GetActorLocation());	
-	// 		}
-	// 	}	
-	// }
+	if (const ACharacterBase* Character = Cast<ACharacterBase>(OtherActor))
+	{
+		if (UAbilitySystemComponent* HitCharacterAcs = Character->GetAbilitySystemComponent();
+			ensureMsgf(HitCharacterAcs, TEXT("No AbilitySystemComponent set for %s"), *GetName()))
+		{
+			FGameplayEffectContextHandle EffectContext = HitCharacterAcs->MakeEffectContext();
+			EffectContext.AddSourceObject(this);
+			EffectContext.AddHitResult(Hit);
+	
+			if (!DamageEffectClass)
+			{
+				return;
+			}
+			
+			if (const FGameplayEffectSpecHandle SpecHandle = HitCharacterAcs->MakeOutgoingSpec(DamageEffectClass, 1, EffectContext);
+				ensureMsgf(SpecHandle.IsValid(), TEXT("SpecHandle == nullptr for %s"), *GetName()))
+			{
+				if (AttributeSet)
+				{
+					const float DamageValue = AttributeSet->GetDamage();
+					const FGameplayTag ProjectileDamageTag = NativeGameplayTags::Projectile::TAG_DamageType_DirectDamage.GetTag();
+					SpecHandle.Data->SetSetByCallerMagnitude(ProjectileDamageTag, DamageValue);
+				
+					HitCharacterAcs->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);	
+				}
+			}
+	
+			if (OtherComp->IsSimulatingPhysics())
+			{
+				OtherComp->AddImpulseAtLocation(GetVelocity() * Mass, GetActorLocation());	
+			}
+		}	
+	}
 
-	// if (UPrimitiveComponent* ActorRoot = Cast<UPrimitiveComponent>(OtherActor->GetRootComponent()); ActorRoot && ActorRoot->Mobility == EComponentMobility::Movable && ActorRoot->IsSimulatingPhysics())
-	// {
-	// 	ActorRoot->AddImpulseAtLocation(GetVelocity() * Mass, GetActorLocation());
-	// }
+	if (UPrimitiveComponent* ActorRoot = Cast<UPrimitiveComponent>(OtherActor->GetRootComponent()); ActorRoot && ActorRoot->Mobility == EComponentMobility::Movable && ActorRoot->IsSimulatingPhysics())
+	{
+		ActorRoot->AddImpulseAtLocation(GetVelocity() * Mass, GetActorLocation());
+	}
 }
